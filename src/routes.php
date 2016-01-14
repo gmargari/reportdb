@@ -17,19 +17,19 @@ require __DIR__ . '/../src/util.php';
 //==============================================================================
 function getReportByLoc($request, $response, $args) {
     $params = $request->getParams();
-    $required_params = array('longitude', 'latitude', 'max_distance', 'start_time', 'past_window');
+    $required_params = array('longitude', 'latitude', 'max_distance', 'timestamp', 'past_window');
     if (!allParamsDefined($required_params, $params)) {
         return responseWithCodeMessage($response, 400, 'Not all required parameters are defined');
     }
 
     $longitude = (string)$params['longitude'];
     $latitude = (string)$params['latitude'];
-    $start_time = (string)$params['start_time'];
+    $timestamp = (string)$params['timestamp'];
     $past_window = (string)$params['past_window'];
     $max_distance = (string)$params['max_distance'];
 
     $result = array();
-    if (getReportsFromDB($longitude, $latitude, $max_distance, $start_time, $past_window, $result)) {
+    if (getReportsFromDB($longitude, $latitude, $max_distance, $timestamp, $past_window, $result)) {
         $result = json_encode($result);
         $response = $response->withHeader('Content-type', 'application/json');
         return responseWithCodeMessage($response, 200, $result);

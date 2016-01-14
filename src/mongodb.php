@@ -89,11 +89,15 @@ function ensureIndexExistsInDB($collection, $field) {  // TODO: private
 //==============================================================================
 // getReportsFromDB ()
 //==============================================================================
-function getReportsFromDB($longitude, $latitude, $max_distance, $start_time, $past_window, &$result) {
-    //$past_window = $start_time - (60 * $minutes);
+function getReportsFromDB($longitude, $latitude, $max_distance, $timestamp, $past_window, &$result) {
     $collection = Config::report_col;
+    $start_time = $timestamp - (60 * $past_window);  // past_window is in minutes
+    $end_time = $timestamp;
     $query = array(
-//        'time' => array('$gte' => (string)$past_window),
+        'time' => array(
+            '$gte' => (string)$start_time,
+            '$lte' => (string)$end_time,
+         ),
 //        'RealTF' => array('$ne' => 'false')
     );
     $sort_filter = array("time" => -1);
@@ -105,7 +109,29 @@ function getReportsFromDB($longitude, $latitude, $max_distance, $start_time, $pa
     foreach ($cursor as $doc) {
         $dist = vincentyGreatCircleDistance($latitude, $longitude, $doc['reportLatitude'], $doc['reportLongitude']);
         if ($dist <= $max_distance){
-            $result[] = $doc;
+            $report = array(
+                'ProbabilityRealTF' => $doc['ProbabilityRealTF'],
+                'ProbabilityTF' => $doc['ProbabilityTF'],
+                'RealTF' => $doc['RealTF'],
+                'TF' => $doc['TF'],
+                '_id' => $doc['_id'],
+                'accuracy' => $doc['accuracy'],
+                'address' => $doc['address'],
+                'comments' => $doc['comments'],
+                'heading' => $doc['heading'],
+                'judgements' => $doc['judgements'], // array() of arrays ('userId', 'button, 'time')
+                'mode' => $doc['mode'],
+                'reportLatitude' => $doc['reportLatitude'],
+                'reportLongitude' => $doc['reportLongitude'],
+                'severity' => $doc['severity'],
+                'speed' => $doc['speed'],
+                'time' => $doc['time'],
+                'type' => $doc['type'],
+                'userId' => $doc['userId'],
+                'userLatitude' => $doc['userLatitude'],
+                'userLongitude' => $doc['userLongitude'],
+            );
+            $result[] = $report;
         }
     }
 
