@@ -7,19 +7,19 @@ error_reporting(E_ALL);
 //==============================================================================
 // Mapping of routes to functions
 //==============================================================================
-$app->get('/report/getByLoc', 'getReportByLoc');
+$app->get('/report/getByLocTime', 'getReportByLocTime');
 
 require __DIR__ . '/../src/mongodb.php';
 require __DIR__ . '/../src/util.php';
 
 //==============================================================================
-// getReportByLoc ()
+// getReportByLocTime ()
 //==============================================================================
-function getReportByLoc($request, $response, $args) {
+function getReportByLocTime($request, $response, $args) {
     $params = $request->getParams();
     $required_params = array('longitude', 'latitude', 'max_distance', 'timestamp', 'past_window');
     if (!allParamsDefined($required_params, $params)) {
-        return responseWithCodeMessage($response, 400, 'Not all required parameters are defined');
+        return responseWithCodeMessage($response, 400, 'Parameter missing');
     }
 
     $longitude = (string)$params['longitude'];
@@ -34,6 +34,6 @@ function getReportByLoc($request, $response, $args) {
         $response = $response->withHeader('Content-type', 'application/json');
         return responseWithCodeMessage($response, 200, $result);
     } else  {
-        return responseWithCodeMessage($response, 500, 'Could not retrieve from db');
+        return responseWithCodeMessage($response, 500, 'Database error');
     }
 }
