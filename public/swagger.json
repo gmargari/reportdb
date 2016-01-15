@@ -1,0 +1,123 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "reportdb",
+        "description": "A simple API for retrieving reports"
+    },
+    "host": "160.40.50.61",
+    "basePath": "/reportdb/public",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/report/getByLocTime": {
+            "get": {
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Find reports given location and time",
+                "description": "Returns all reports near a given location within the given time window.<br>To test use values longitude = 22.961883, latitude = 40.644079, max_distance = 2, timestamp = 1452843668, past_window = 6000",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "longitude",
+                        "type": "string",
+                        "in": "query",
+                        "required": true,
+                        "description": "location longitude"
+                    },
+                    {
+                        "name": "latitude",
+                        "type": "string",
+                        "in": "query",
+                        "required": true,
+                        "description": "location latitude"
+                    },
+                    {
+                        "name": "max_distance",
+                        "type": "integer",
+                        "in": "query",
+                        "required": true,
+                        "description": "maximum distance from location, in Km"
+                    },
+                    {
+                        "name": "timestamp",
+                        "type": "string",
+                        "in": "query",
+                        "required": true,
+                        "description": "return reports that were created up to this time"
+                    },
+                    {
+                        "name": "past_window",
+                        "type": "string",
+                        "in": "query",
+                        "required": true,
+                        "description": "return reports that were created up to 'past_window' minutes in past from 'timestamp'"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/report"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter missing"
+                    },
+                    "500": {
+                        "description": "Database error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "report": {
+            "type": "object",
+            "properties": {
+                "reportlongitude": {
+                    "type": "string",
+                    "example": "22.961883"
+                },
+                "reportlatitude": {
+                    "type": "string",
+                    "example": "40.644079"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "traffic"
+                },
+                "severity": {
+                    "type": "string",
+                    "example": "medium"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "1452543541"
+                },
+                "comments": {
+                    "type": "string",
+                    "example": "Example comment"
+                },
+                "reliability": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 0.7
+                }
+            }
+        }
+    }
+}
