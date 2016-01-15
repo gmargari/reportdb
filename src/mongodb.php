@@ -98,7 +98,7 @@ function getReportsFromDB($longitude, $latitude, $max_distance, $timestamp, $pas
             '$gte' => (string)$start_time,
             '$lte' => (string)$end_time,
          ),
-//        'RealTF' => array('$ne' => 'false')
+         'RealTF' => array('$ne' => 'false'),
     );
     $sort_filter = array("time" => -1);
     if (!mongodbFind($collection, $query, $cursor)) {
@@ -110,26 +110,27 @@ function getReportsFromDB($longitude, $latitude, $max_distance, $timestamp, $pas
         $dist = vincentyGreatCircleDistance($latitude, $longitude, $doc['reportLatitude'], $doc['reportLongitude']);
         if ($dist <= $max_distance){
             $report = array(
-                'ProbabilityRealTF' => $doc['ProbabilityRealTF'],
-                'ProbabilityTF' => $doc['ProbabilityTF'],
-                'RealTF' => $doc['RealTF'],
-                'TF' => $doc['TF'],
-                '_id' => $doc['_id'],
-                'accuracy' => $doc['accuracy'],
+                'reportLatitude' => (float)$doc['reportLatitude'],
+                'reportLongitude' => (float)$doc['reportLongitude'],
                 'address' => $doc['address'],
-                'comments' => $doc['comments'],
-                'heading' => $doc['heading'],
-                'judgements' => $doc['judgements'], // array() of arrays ('userId', 'button, 'time')
-                'mode' => $doc['mode'],
-                'reportLatitude' => $doc['reportLatitude'],
-                'reportLongitude' => $doc['reportLongitude'],
-                'severity' => $doc['severity'],
-                'speed' => $doc['speed'],
-                'time' => $doc['time'],
                 'type' => $doc['type'],
-                'userId' => $doc['userId'],
-                'userLatitude' => $doc['userLatitude'],
-                'userLongitude' => $doc['userLongitude'],
+                'severity' => $doc['severity'],
+                'time' => $doc['time'],
+                'comments' => $doc['comments'],
+                'reliability' => (1 - (float)$doc['ProbabilityRealTF']),
+//                'userId' => $doc['userId'],
+//                'userLatitude' => $doc['userLatitude'],
+//                'userLongitude' => $doc['userLongitude'],
+//                '_id' => $doc['_id'],
+//                'accuracy' => $doc['accuracy'],
+//                'heading' => $doc['heading'],
+//                'speed' => $doc['speed'],
+//                'mode' => $doc['mode'],
+//                'ProbabilityRealTF' => $doc['ProbabilityRealTF'],
+//                'ProbabilityTF' => $doc['ProbabilityTF'],
+//                'RealTF' => $doc['RealTF'],
+//                'TF' => $doc['TF'],
+//                'judgements' => $doc['judgements'], // array() of arrays ('userId', 'button, 'time')
             );
             $result[] = $report;
         }
